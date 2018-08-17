@@ -50,3 +50,43 @@ func TestIsValidIP4(t *testing.T) {
 		}
 	}
 }
+
+func SliceAtoi(slice_array[] string)([] int, error) {
+    slice_of_ints := make([] int, 0, len(slice_array))
+    for _,
+    a := range slice_array {
+        integer, err := strconv.Atoi(a)
+        if err != nil {
+            return slice_of_ints, err
+        }
+        slice_of_ints = append(slice_of_ints, integer)
+    }
+    return slice_of_ints, nil
+}
+
+func TestSliceAtoi(t *testing.T) {
+	t.Parallel()
+	
+	var tests = []struct {
+		param    []string
+		expected []int
+		err	 error
+	}{
+		{"127.0.0.1", true},
+		{"", false},
+		{"::", false},
+		{"151.12.29.30", true},
+		{"-151.12.29.30", false},
+		{"127ssee.0.0.1", false},
+		{"127.0.01", false},
+		{"::1", false},
+		{"localhost", true},
+		{"287.212.12.2", false},
+	}
+	for _, test := range tests {
+		actual, err := IsValidIP4(test.param)
+		if err != nil {
+			t.Errorf("Expected SliceAtoi(%q) to return %q, got %v", test.param, test.expected, err)
+		}
+	}
+}

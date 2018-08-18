@@ -40,7 +40,6 @@ func (t *tcp_forwarder) Listen() {
 		select {
 		case <-timer.C:
 			for _, conn := range t.connections {
-				log.Println(conn)
 				conn.Close()
 			} //this range on the requests is now unnecessary with conn.setdeadline
 			listener.Close()

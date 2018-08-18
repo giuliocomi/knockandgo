@@ -1,12 +1,11 @@
 package network
 
-// TODO: SINGLETON
-
 import (
 	"bytes"
 	"log"
 	"net"
 	"strconv"
+	"sync"
 
 	"github.com/giuliocomi/knockandgo/crypto"
 	"github.com/giuliocomi/knockandgo/utility"
@@ -20,9 +19,22 @@ type udp_server struct {
 	timeout              int
 }
 
-func NewUdpServer(server_port int, kports []int, max_forwarding_ports int, certpath string, timeout int) udp_server {
-	s := udp_server{server_port, kports, max_forwarding_ports, certpath, timeout}
-	return s
+var singleton *udp_server 
+var once sync.Once
+
+func (s *udp_server) SetUdpServer(s_port int, kports []int, max_f_ports int, cpath string, tout int) {
+	s.server_port = s_port
+	s.knockable_ports = kports
+	s.max_forwarding_ports = max_f_ports
+	s.certpath = cpath
+	s.timeout = tout
+}
+
+func GetUDPServer() *udp_server {
+	once.Do(func() {
+		singleton = &udp_server{}
+	    })
+	return singleton
 }
 
 func (s *udp_server) Run() {

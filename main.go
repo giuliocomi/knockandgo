@@ -35,7 +35,8 @@ func main() {
 
 	switch string(*modality) {
 	case string("s"):
-		s := network.NewUdpServer(*server_port, knockable_ports, *max_forwarding_ports, *certpath, *timeout)
+		s := network.GetUDPServer()
+		s.SetUdpServer(*server_port, knockable_ports, *max_forwarding_ports, *certpath, *timeout)
 		s.Run()
 	case string("c"):
 		c := network.NewUdpClient(*server_ip, *server_port, *k_port, *certpath, *timeout)

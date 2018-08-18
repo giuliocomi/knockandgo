@@ -1,7 +1,8 @@
 package utility
 
 import "testing"
-import "utility"
+import "bytes"
+import "encoding/binary"
 
 func TestContainsPort(t *testing.T) {
 	t.Parallel()
@@ -11,7 +12,7 @@ func TestContainsPort(t *testing.T) {
 		param2   int
 		expected bool
 	}{
-		{[]int{1, 22, 3, 5050, 80, 8080, 445}, 445, true},
+		{[]int{1, 445, 3, 5050, 80, 8080, 445}, 445, true},
 		{[]int{1, 22, 3, 5050, 80, 8080, 445}, -22, false},
 		{[]int{1, 22, 3, 5050, 80, 8080, 445}, 12321, false},
 		{[]int{1, 22, 3, 5050, 80, 8080, 445}, 808080, false},
@@ -50,5 +51,31 @@ func TestIsValidIP4(t *testing.T) {
 			t.Errorf("Expected IsValidIP4(%v) to be %v, got %v", test.param, test.expected, actual)
 		}
 	}
+}
+
+func TestSliceAtoi(t *testing.T) {
+	t.Parallel()
+
+var tests = []struct {
+		param    []string
+		expected []int
+	}{
+		{[]string{"1","    22", "3", "asasaaaa", "80", "8080", "2445"}, []int{1, 22, 3, 80, 8080, 2445}},
+		{[]string{"-1","  -  22", "3", "5050", "80", "8080", "2445"}, []int{-1, 3, 5050, 80, 8080, 2445}},
+	}
+
+	for _, test := range tests {
+		actual, _ := SliceAtoi(test.param)
+		
+		var buf_expected bytes.Buffer
+		binary.Write(&buf_expected, binary.BigEndian, test.expected)
+		var buf_actual bytes.Buffer
+		binary.Write(&buf_actual, binary.BigEndian, actual)
+
+		if !bytes.Equal(buf_expected.Bytes(), buf_actual.Bytes()) {
+			t.Errorf("Expected SliceAtoi(%v) to be %v, got %v", test.param, test.expected, actual)
+		}
+	}
+
 }
 

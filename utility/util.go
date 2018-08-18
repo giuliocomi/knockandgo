@@ -37,16 +37,15 @@ func RandomPort() int {
 	return rort
 }
 
-//TODO: we can sort the array to reduce complexity
-func ContainsPort(s []int, e int) bool {
+func ContainsPort(s []int, e int) bool { 
+	sort.Ints(s)
 	i := sort.Search(len(s), func(i int) bool { return s[i] >= e })
-	if i < len(s) && s[i] == e {
+	if (i < len(s) && s[i] == e) && (e < 65535) && (e > 0) {
 		return true
 	} else {
 		return false
 	}
 }
-
 
 //validate IP v4 | credits to: https://github.com/asaskevich/govalidator/blob/f9ffefc3facfbe0caee3fea233cbb6e8208f4541/validator.go
 func IsValidIP4(ipAddress string) bool {
@@ -57,17 +56,17 @@ func IsValidIP4(ipAddress string) bool {
 	return false
 }
 
+//translate a slice of strings into one of ints
 func SliceAtoi(slice_array []string) ([]int, error) {
 	slice_of_ints := make([]int, 0, len(slice_array))
 	for _, a := range slice_array {
-		integer, err := strconv.Atoi(a)
+		integer, err := strconv.Atoi(strings.TrimSpace(a))
 		if err != nil {
-			return slice_of_ints, err
+			continue
 		}
 		slice_of_ints = append(slice_of_ints, integer)
 	}
-	return slice_of_ints,
-		nil
+	return slice_of_ints, nil
 }
 
 //this awful function has the aim to recover from unexpected condition of tcp connections errors/kills

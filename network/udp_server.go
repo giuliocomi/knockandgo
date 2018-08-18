@@ -21,6 +21,7 @@ type udp_server struct {
 
 var singleton *udp_server 
 var once sync.Once
+var Instantiated_forwarding_ports int //the forwarding ports currently in state 'open'
 
 func (s *udp_server) SetUdpServer(s_port int, kports []int, max_f_ports int, cpath string, tout int) {
 	s.server_port = s_port
@@ -39,7 +40,6 @@ func GetUDPServer() *udp_server {
 
 func (s *udp_server) Run() {
 
-	var instantiated_forwarding_ports int
 	// listen to incoming udp packets
 	log.Println("Whitelisted knockable ports:", s.knockable_ports)
 	log.Println(s.server_port)
@@ -66,7 +66,7 @@ func (s *udp_server) Run() {
 		log.Println(json_unmarshalled)
 		rort := utility.RandomPort()
 		log.Println(rort)
-		if (utility.ContainsPort(s.knockable_ports, kport)) && (instantiated_forwarding_ports < s.max_forwarding_ports) {
+		if (utility.ContainsPort(s.knockable_ports, kport)) && (Instantiated_forwarding_ports < s.max_forwarding_ports) {
 			//check if target port is open
 			port_open := utility.CheckConnection("127.0.0.1", kport)
 			if !port_open {
@@ -86,7 +86,8 @@ func (s *udp_server) Run() {
 						return client_timeout
 					}
 				}())
-				instantiated_forwarding_ports++
+				Instantiated_forwarding_ports++
+				log.Println("forwarding ports:", Instantiated_forwarding_ports)
 				go forwarder.Listen()
 
 				//tcp forwarder port created
@@ -99,7 +100,7 @@ func (s *udp_server) Run() {
 				}(), true)), addr) // return true: no error and port correctly opened
 			}
 		} else {
-			if instantiated_forwarding_ports >= s.max_forwarding_ports {
+			if Instantiated_forwarding_ports >= s.max_forwarding_ports {
 				log.Println("Reached maximum number of available forwarding ports")
 			} else {
 				log.Println("Port is not whitelisted to be forwarded")

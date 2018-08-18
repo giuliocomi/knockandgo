@@ -42,6 +42,8 @@ func (t *tcp_forwarder) Listen() {
 			for _, conn := range t.connections {
 				conn.Close()
 			} //this range on the requests is now unnecessary with conn.setdeadline
+			Instantiated_forwarding_ports-- //a new slot for a tcp forwarder is available after this is freed
+			log.Println("forwarding ports now:", Instantiated_forwarding_ports)
 			listener.Close()
 		default:
 			conn.SetDeadline(time.Now().Add(time.Duration(t.timeout) * time.Second))

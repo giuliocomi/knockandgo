@@ -76,3 +76,11 @@ func HandlePanic() {
 		return
 	}
 }
+
+
+func GetStringIpFromAddr(c net.Conn) string {
+	if addr, ok := c.RemoteAddr().(*net.TCPAddr); ok {
+    		return addr.IP.String()
+	}
+	return ""
+}

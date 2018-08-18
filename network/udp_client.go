@@ -16,10 +16,11 @@ type udp_client struct {
 	knock_port     int
 	certpath       string
 	timeout        int
+	ip_to_whitelist string
 }
 
-func NewUdpClient(server_address string, server_port int, knock_port int, certpath string, timeout int) udp_client {
-	c := udp_client{server_address, server_port, knock_port, certpath, timeout}
+func NewUdpClient(server_address string, server_port int, knock_port int, certpath string, timeout int, ip_to_whitelist string) udp_client {
+	c := udp_client{server_address, server_port, knock_port, certpath, timeout, ip_to_whitelist}
 	return c
 }
 
@@ -35,7 +36,7 @@ func (c *udp_client) Run() {
 	defer conn.Close()
 
 	//craft message
-	msg := NewMessage(c.knock_port, 0, c.timeout, false)
+	msg := NewMessage(c.knock_port, 0, c.ip_to_whitelist, c.timeout, false)
 	json_marshalled := Encode_message((msg))
 	//send knock message to server
 	encrypted_msg := crypto.Encrypt(string(json_marshalled), c.certpath+"public.pem")
@@ -46,7 +47,6 @@ func (c *udp_client) Run() {
 	conn.Read(buffer)
 	json_unmarshalled := Decode_message([]byte(bytes.Trim(buffer, "\x00")))
 	fport := json_unmarshalled.Forward_port
-
 	//check if port is reachable
 	port_open := utility.CheckConnection(c.server_address, fport)
 	if port_open {

@@ -15,11 +15,12 @@ type tcp_forwarder struct {
 	server_port    int
 	knock_port     int
 	connections    []net.Conn
+	ip_to_whitelist string
 	timeout        int
 }
 
-func NewTcpForwarder(server_address string, server_port int, knock_port int, timeout int) tcp_forwarder {
-	c := tcp_forwarder{server_address, server_port, knock_port, nil, timeout}
+func NewTcpForwarder(server_address string, server_port int, knock_port int, ip_to_whitelist string, timeout int) tcp_forwarder {
+	c := tcp_forwarder{server_address, server_port, knock_port, nil, ip_to_whitelist, timeout}
 	return c
 }
 
@@ -35,24 +36,21 @@ func (t *tcp_forwarder) Listen() {
 	log.Println("Port forwarding server up and listening on ", t.server_address+":"+strconv.Itoa(t.server_port))
 
 	for {
-		conn, err := listener.Accept()
-		//check if the timeout has expired, if so kill the tcp wrapper and all connections otherwise, accept the new incoming tcp connection and set a timeout for it
+		conn, _ := listener.Accept()
+		//check if the timeout has expired, if so kill the tcp wrapper and all connections, otherwise accept the new incoming tcp connection and set a timeout for it
 		select {
 		case <-timer.C:
-			for _, conn := range t.connections {
-				conn.Close()
-			} //this range on the requests is now unnecessary with conn.setdeadline
 			Instantiated_forwarding_ports-- //a new slot for a tcp forwarder is available after this is freed
-			log.Println("forwarding ports now:", Instantiated_forwarding_ports)
 			listener.Close()
 		default:
 			conn.SetDeadline(time.Now().Add(time.Duration(t.timeout) * time.Second))
 			t.connections = append(t.connections, conn)
-			if err != nil {
-				log.Fatal(err)
+			//verify that the source Ip address of the connection is trusted
+			if t.ip_to_whitelist == utility.GetStringIpFromAddr(conn) {
+				handleConnection("127.0.0.1", t.knock_port, conn)
+			} else {
+				log.Println("The remote IP address is not in the whitelist")
 			}
-
-			handleConnection("127.0.0.1", t.knock_port, conn)
 		}
 	}
 }

@@ -12,6 +12,7 @@ var (
 	k_port               = flag.Int("k", 80, "port to open via knock technique")
 	server_port          = flag.Int("s", 8080, "server port")
 	server_ip            = flag.String("a", "localhost", "server address (IP)")
+	ip_to_whitelist      = flag.String("i", "127.0.0.1", "the source IP to whitelist for the tcp forwarding connections")
 	max_forwarding_ports = flag.Int("f", 5, "number of maximum tcp wrappers to instantiate")
 	modality             = flag.String("m", "c", "modality of operation: server (s) or client (c)")
 	certpath             = flag.String("c", "./certs/", "the path to the PEM certificate (public in case of client, private in case of server")
@@ -39,7 +40,7 @@ func main() {
 		s.SetUdpServer(*server_port, knockable_ports, *max_forwarding_ports, *certpath, *timeout)
 		s.Run()
 	case string("c"):
-		c := network.NewUdpClient(*server_ip, *server_port, *k_port, *certpath, *timeout)
+		c := network.NewUdpClient(*server_ip, *server_port, *k_port, *certpath, *timeout, *ip_to_whitelist)
 		c.Run()
 	default:
 		panic("unkown modality")

@@ -60,17 +60,17 @@ func (s *udp_server) Run() {
 		json_marshalled := crypto.Decrypt(string(bytes.Trim(buffer, "\x00")), s.certpath+"private.pem")
 		json_unmarshalled := Decode_message([]byte(json_marshalled))
 		kport := json_unmarshalled.Knock_port
-
+		ip_to_whitelist := json_unmarshalled.Ip_to_whitelist
 		client_timeout := json_unmarshalled.Timeout
 		//pick a random port to start the tcp_wrapper on
 		log.Println(json_unmarshalled)
 		rort := utility.RandomPort()
 		log.Println(rort)
-		if (utility.ContainsPort(s.knockable_ports, kport)) && (Instantiated_forwarding_ports < s.max_forwarding_ports) {
+		if (utility.ContainsPort(s.knockable_ports, kport)) && (Instantiated_forwarding_ports < s.max_forwarding_ports) && utility.IsValidIP4(ip_to_whitelist) {
 			//check if target port is open
 			port_open := utility.CheckConnection("127.0.0.1", kport)
 			if !port_open {
-				pc.WriteTo(Encode_message(NewMessage(0, 0, func() int {
+				pc.WriteTo(Encode_message(NewMessage(0, 0, ip_to_whitelist, func() int {
 					if s.timeout < client_timeout {
 						return s.timeout
 					} else {
@@ -79,7 +79,7 @@ func (s *udp_server) Run() {
 				}(), false)), addr)
 				continue
 			} else {
-				forwarder := NewTcpForwarder("0.0.0.0", rort, kport, func() int {
+				forwarder := NewTcpForwarder("0.0.0.0", rort, kport, ip_to_whitelist, func() int {
 					if s.timeout < client_timeout {
 						return s.timeout
 					} else {
@@ -87,11 +87,10 @@ func (s *udp_server) Run() {
 					}
 				}())
 				Instantiated_forwarding_ports++
-				log.Println("forwarding ports:", Instantiated_forwarding_ports)
 				go forwarder.Listen()
 
 				//tcp forwarder port created
-				pc.WriteTo(Encode_message(NewMessage(0, rort, func() int {
+				pc.WriteTo(Encode_message(NewMessage(0, rort, ip_to_whitelist, func() int {
 					if s.timeout < client_timeout {
 						return s.timeout
 					} else {
@@ -102,10 +101,12 @@ func (s *udp_server) Run() {
 		} else {
 			if Instantiated_forwarding_ports >= s.max_forwarding_ports {
 				log.Println("Reached maximum number of available forwarding ports")
-			} else {
+			} else if !utility.IsValidIP4(ip_to_whitelist) {
+				log.Println("The IP to whitelist is not in a correct IPv4 format")
+			} else {	
 				log.Println("Port is not whitelisted to be forwarded")
 			}
-			pc.WriteTo(Encode_message(NewMessage(kport, rort, 0, false)), addr)
+			pc.WriteTo(Encode_message(NewMessage(kport, rort, "", 0, false)), addr)
 		}
 	}
 }

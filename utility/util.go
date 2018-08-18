@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"sort"
 )
 
 //verify if the target port is in state 'open'
@@ -38,13 +39,14 @@ func RandomPort() int {
 
 //TODO: we can sort the array to reduce complexity
 func ContainsPort(s []int, e int) bool {
-	for _, a := range s {
-		if a == e && (a > 0) && (a < 65535) {
-			return true
-		}
+	i := sort.Search(len(s), func(i int) bool { return s[i] >= e })
+	if i < len(s) && s[i] == e {
+		return true
+	} else {
+		return false
 	}
-	return false
 }
+
 
 //validate IP v4 | credits to: https://github.com/asaskevich/govalidator/blob/f9ffefc3facfbe0caee3fea233cbb6e8208f4541/validator.go
 func IsValidIP4(ipAddress string) bool {

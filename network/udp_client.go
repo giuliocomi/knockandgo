@@ -1,7 +1,6 @@
 package network
 
 import (
-	"bytes"
 	"log"
 	"net"
 	"strconv"
@@ -45,13 +44,6 @@ func (c *udp_client) Run() {
 	//read which forwarding port has been picked
 	buffer := make([]byte, 1024)
 	conn.Read(buffer)
-	json_unmarshalled := Decode_message([]byte(bytes.Trim(buffer, "\x00")))
-	fport := json_unmarshalled.Forward_port
-	//check if port is reachable
-	port_open := utility.CheckConnection(c.server_address, fport)
-	if port_open {
-		log.Println(string(buffer))
-	} else {
-		log.Println("The forwarding port seems closed")
-	}
+	
+	log.Println(string(buffer))
 }

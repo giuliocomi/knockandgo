@@ -32,7 +32,6 @@ func main() {
 	for _, arg := range args {
 		knockable_ports = append(knockable_ports, arg)
 	}
-	log.Println(knockable_ports)
 
 	switch string(*modality) {
 	case string("s"):

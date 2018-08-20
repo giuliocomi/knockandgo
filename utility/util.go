@@ -15,7 +15,6 @@ func CheckConnection(server_address string, fport int) bool {
 
 	conn, err := net.Dial("tcp", server_address+":"+strconv.Itoa(fport))
 	if err != nil {
-		log.Println("Connection error:", err)
 		return false
 	}
 	defer conn.Close()

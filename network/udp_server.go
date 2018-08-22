@@ -22,7 +22,6 @@ type udp_server struct {
 var singleton *udp_server 
 var once sync.Once
 var Instantiated_forwarding_ports int //the forwarding ports currently in state 'open'
-
 func (s *udp_server) SetUdpServer(s_port int, kports []int, max_f_ports int, cpath string, tout int) {
 	s.server_port = s_port
 	s.knockable_ports = kports
@@ -39,7 +38,7 @@ func GetUDPServer() *udp_server {
 }
 
 func (s *udp_server) Run() {
-
+	
 	// listen to incoming udp packets
 	log.Println("Whitelisted knockable ports:", s.knockable_ports)
 	log.Println(s.server_port)
@@ -51,33 +50,32 @@ func (s *udp_server) Run() {
 
 	for {
 		buffer := make([]byte, 1024)
-		_,
-			addr,
-			err := pc.ReadFrom(buffer)
+		_, addr, err := pc.ReadFrom(buffer)
 		if err != nil {
 			log.Println("Buffer error")
 		}
-		json_marshalled := crypto.Decrypt(string(bytes.Trim(buffer, "\x00")), s.certpath+"private.pem")
+		json_marshalled, errd := crypto.Decrypt(string(bytes.Trim(buffer, "\x00")), s.certpath+"server_private.pem")
+		if errd != nil {
+			log.Println("Error during the decryption of the message received")
+			continue
+		}
 		json_unmarshalled := Decode_message([]byte(json_marshalled))
 		kport := json_unmarshalled.Knock_port
 		ip_to_whitelist := json_unmarshalled.Ip_to_whitelist
 		client_timeout := json_unmarshalled.Timeout
 		//pick a random port to start the tcp_wrapper on
-		log.Println(json_unmarshalled)
 		rort := utility.RandomPort()
-		log.Println(rort)
 		if (utility.ContainsPort(s.knockable_ports, kport)) && (Instantiated_forwarding_ports < s.max_forwarding_ports) && utility.IsValidIP4(ip_to_whitelist) {
 			//check if target port is open
 			port_open := utility.CheckConnection("127.0.0.1", kport)
 			if !port_open {
-				pc.WriteTo(Encode_message(NewMessage(0, 0, ip_to_whitelist, func() int {
+				SendResponse(string(Encode_message(NewMessage(0, 0, ip_to_whitelist, func() int {
 					if s.timeout < client_timeout {
 						return s.timeout
 					} else {
 						return client_timeout
 					}
-				}(), false)), addr)
-				continue
+				}(), false))), pc, s.certpath, addr)
 			} else {
 				forwarder := NewTcpForwarder("0.0.0.0", rort, kport, ip_to_whitelist, func() int {
 					if s.timeout < client_timeout {
@@ -90,13 +88,14 @@ func (s *udp_server) Run() {
 				go forwarder.Listen()
 
 				//tcp forwarder port created
-				pc.WriteTo(Encode_message(NewMessage(0, rort, ip_to_whitelist, func() int {
+
+				SendResponse(string(Encode_message(NewMessage(kport, rort, ip_to_whitelist, func() int {
 					if s.timeout < client_timeout {
 						return s.timeout
 					} else {
 						return client_timeout
 					}
-				}(), true)), addr) // return true: no error and port correctly opened
+				}(), true))), pc, s.certpath, addr) // result true: no error and port correctly opened
 			}
 		} else {
 			if Instantiated_forwarding_ports >= s.max_forwarding_ports {
@@ -106,7 +105,17 @@ func (s *udp_server) Run() {
 			} else {	
 				log.Println("Port is not whitelisted to be forwarded")
 			}
-			pc.WriteTo(Encode_message(NewMessage(kport, rort, "", 0, false)), addr)
+			SendResponse(string(Encode_message(NewMessage(kport, rort, "", 0, false))), pc, s.certpath, addr)
 		}
 	}
 }
+
+func SendResponse(encoded_response string, pc net.PacketConn, certpath string, addr net.Addr) {
+	encrypted_response, err := crypto.Encrypt(encoded_response, certpath+"client_public.pem")
+	if err != nil {
+		log.Println("Error during encryption of the response", err)
+		return
+	}
+	pc.WriteTo([]byte(encrypted_response), addr)
+}
+

@@ -76,8 +76,18 @@ func ParseRsaPublicKeyFromPemStr(pubPEM string) (*rsa.PublicKey, error) {
 }
 
 func main() {
+	
+	fmt.Println("Generating the key pairs...")
+	//generate the key pair for the clients
+	generateCerts("client_public.pem", "client_private.pem")
+	
+	//generate the key pair for the server
+	generateCerts("server_public.pem", "server_private.pem")
+	fmt.Println("Finished successfully...")
+}
 
-	// Create the keys
+func generateCerts(public, private string) {
+// Create the keys
 	priv, pub := GenerateRsaKeyPair()
 
 	// Export the keys to pem string
@@ -92,21 +102,17 @@ func main() {
 	priv_parsed_pem := ExportRsaPrivateKeyAsPemStr(priv_parsed)
 	pub_parsed_pem, _ := ExportRsaPublicKeyAsPemStr(pub_parsed)
 
-	fmt.Println(priv_parsed_pem)
-	fmt.Println(pub_parsed_pem)
+	err := ioutil.WriteFile(public, []byte(pub_parsed_pem), 0400)
+	if err != nil {
+		panic(err)
+	}
+	err = ioutil.WriteFile(private, []byte(priv_parsed_pem), 0400)
+	if err != nil {
+		panic(err)
+	}
 
-	err := ioutil.WriteFile("private.pem", []byte(priv_parsed_pem), 0400)
-	if err != nil {
-		panic(err)
-	}
-	err = ioutil.WriteFile("public.pem", []byte(pub_parsed_pem), 0400)
-	if err != nil {
-		panic(err)
-	}
 	// Check that the exported/imported keys match the original keys
 	if priv_pem != priv_parsed_pem || pub_pem != pub_parsed_pem {
-		fmt.Println("Failure: Export and Import did not result in same Keys")
-	} else {
-		fmt.Println("Success")
+		panic("Failure: Export and Import did not result in same Keys")
 	}
 }

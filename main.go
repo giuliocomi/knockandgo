@@ -23,6 +23,7 @@ var (
 func main() {
 
 	flag.Parse()
+
 	// load and validate the whitelisted knockable ports
 	args, err := utility.SliceAtoi(flag.Args())
 	if err != nil {

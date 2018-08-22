@@ -26,12 +26,11 @@ func NewUdpClient(server_address string, server_port int, knock_port int, certpa
 
 func (c *udp_client) Run() {
 	//connect
-	var conn net.Conn
-	var err error
 	if !utility.IsValidIP4(c.server_address) {
 		panic("Invalid IP v4")
 	}
-	if conn, err = net.Dial("udp", c.server_address+":"+strconv.Itoa(c.server_port)); err != nil {
+	conn, err := net.Dial("udp", c.server_address+":"+strconv.Itoa(c.server_port))
+	if err != nil {
 		log.Println(err)
 	}
 	defer conn.Close()

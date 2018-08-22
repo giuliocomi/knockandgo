@@ -6,6 +6,7 @@ import (
 
 	"github.com/giuliocomi/knockandgo/network"
 	"github.com/giuliocomi/knockandgo/utility"
+	"github.com/giuliocomi/knockandgo/certs"
 )
 
 var (
@@ -34,6 +35,14 @@ func main() {
 		knockable_ports = append(knockable_ports, arg)
 	}
 
+	//check if the necessary certificates are in the correct path (/certs)
+	are_certificate_present := certs.CheckCerts(*certpath, *modality)
+	if !are_certificate_present {
+		log.Println("The necessary certificates are missing...")
+		certs.HandleCert(*certpath)
+	}
+	
+	//launch the client or server instance
 	switch string(*modality) {
 	case string("s"):
 		s := network.GetUDPServer()
@@ -43,6 +52,6 @@ func main() {
 		c := network.NewUdpClient(*server_ip, *server_port, *k_port, *certpath, *timeout, *ip_to_whitelist)
 		c.Run()
 	default:
-		panic("unkown modality")
+		log.Println("unkown modality")
 	}
 }

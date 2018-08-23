@@ -104,7 +104,7 @@ func (s *udp_server) Run() {
 				log.Println("Reached maximum number of available forwarding ports")
 			} else if !utility.IsValidIP4(ip_to_whitelist) {
 				log.Println("The IP to whitelist is not in a correct IPv4 format")
-			} else if utility.IsExpired(expiration) {
+			} else if is_expired {
 				log.Println("The message time validity is expired")
 			} else {	
 				log.Println("Port is not whitelisted to be forwarded")

@@ -6,6 +6,7 @@ import (
 	"net"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/giuliocomi/knockandgo/crypto"
 	"github.com/giuliocomi/knockandgo/utility"
@@ -61,11 +62,13 @@ func (s *udp_server) Run() {
 		}
 		json_unmarshalled := Decode_message([]byte(json_marshalled))
 		kport := json_unmarshalled.Knock_port
+		timestamp := json_unmarshalled.Timestamp
 		ip_to_whitelist := json_unmarshalled.Ip_to_whitelist
 		client_timeout := json_unmarshalled.Timeout
 		//pick a random port to start the tcp_wrapper on
 		rort := utility.RandomPort()
-		if (utility.ContainsPort(s.knockable_ports, kport)) && (Instantiated_forwarding_ports < s.max_forwarding_ports) && utility.IsValidIP4(ip_to_whitelist) {
+		is_expired := utility.IsExpired(timestamp)
+		if (utility.ContainsPort(s.knockable_ports, kport)) && (Instantiated_forwarding_ports < s.max_forwarding_ports) && utility.IsValidIP4(ip_to_whitelist) && !is_expired {
 			//check if target port is open
 			port_open := utility.CheckConnection("127.0.0.1", kport)
 			if !port_open {
@@ -75,7 +78,7 @@ func (s *udp_server) Run() {
 					} else {
 						return client_timeout
 					}
-				}(), false))), pc, s.certpath, addr)
+				}(), false, time.Now().Unix()))), pc, s.certpath, addr)
 			} else {
 				forwarder := NewTcpForwarder("0.0.0.0", rort, kport, ip_to_whitelist, func() int {
 					if s.timeout < client_timeout {
@@ -86,7 +89,6 @@ func (s *udp_server) Run() {
 				}())
 				Instantiated_forwarding_ports++
 				go forwarder.Listen()
-
 				//tcp forwarder port created
 
 				SendResponse(string(Encode_message(NewMessage(kport, rort, ip_to_whitelist, func() int {
@@ -95,17 +97,19 @@ func (s *udp_server) Run() {
 					} else {
 						return client_timeout
 					}
-				}(), true))), pc, s.certpath, addr) // result true: no error and port correctly opened
+				}(), true, time.Now().Unix()))), pc, s.certpath, addr) // result true: no error and port correctly opened
 			}
 		} else {
 			if Instantiated_forwarding_ports >= s.max_forwarding_ports {
 				log.Println("Reached maximum number of available forwarding ports")
 			} else if !utility.IsValidIP4(ip_to_whitelist) {
 				log.Println("The IP to whitelist is not in a correct IPv4 format")
+			} else if utility.IsExpired(expiration) {
+				log.Println("The message time validity is expired")
 			} else {	
 				log.Println("Port is not whitelisted to be forwarded")
 			}
-			SendResponse(string(Encode_message(NewMessage(kport, rort, "", 0, false))), pc, s.certpath, addr)
+			SendResponse(string(Encode_message(NewMessage(kport, rort, "", 0, false, time.Now().Unix()))), pc, s.certpath, addr)
 		}
 	}
 }

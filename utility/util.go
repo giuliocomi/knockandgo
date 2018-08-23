@@ -76,10 +76,18 @@ func HandlePanic() {
 	}
 }
 
-
 func GetStringIpFromAddr(c net.Conn) string {
 	if addr, ok := c.RemoteAddr().(*net.TCPAddr); ok {
     		return addr.IP.String()
 	}
 	return "localhost"
+}
+
+func IsExpired (timestamp int64) bool {
+	const delay = 4 //4 seconds choosed as an arbitrary value to prevent reply attacks and at the same time to allow legitimate client packets to reach the server before they expire
+	tnow := time.Now().Unix()
+	if (timestamp > tnow) || (timestamp + delay < tnow) {
+		return true
+	}
+	return false
 }

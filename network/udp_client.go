@@ -7,6 +7,7 @@ import (
 	"bytes"	
 	"time"
 
+	"github.com/giuliocomi/knockandgo/message"
 	"github.com/giuliocomi/knockandgo/crypto"
 	"github.com/giuliocomi/knockandgo/utility"
 )
@@ -37,8 +38,8 @@ func (c *udp_client) Run() {
 	defer conn.Close()
 
 	//craft message
-	msg := NewMessage(c.knock_port, 0, c.ip_to_whitelist, c.timeout, false, time.Now().Unix())
-	json_marshalled := Encode_message((msg))
+	msg := message.NewMessage(c.knock_port, 0, c.ip_to_whitelist, c.timeout, false, time.Now().Unix())
+	json_marshalled := message.Encode_message((msg))
 
 	//send knock message to server
 	if encrypted_msg, erre := crypto.Encrypt(string(json_marshalled), c.certpath+"server_public.pem"); erre != nil {
@@ -56,6 +57,6 @@ func (c *udp_client) Run() {
 		log.Println("Error decrypting the response from the server")
 		return
 	}
-	json_resp_unmarshalled := Decode_message([]byte(json_resp_marshalled))
+	json_resp_unmarshalled := message.Decode_message([]byte(json_resp_marshalled))
 	log.Println(json_resp_unmarshalled)
 }

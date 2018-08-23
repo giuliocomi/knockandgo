@@ -46,6 +46,7 @@ func (t *tcp_forwarder) Listen() {
 		//verify that the source Ip address of the connection is trusted
 		if t.ip_to_whitelist == utility.GetStringIpFromAddr(conn) {
 			handleConnection("127.0.0.1", t.knock_port, conn)
+			listener.Close() //after a successfull TCP connection, close the port of this tcp wrapper
 		} else {
 			log.Println("The remote IP address is not in the whitelist")
 		}

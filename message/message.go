@@ -1,8 +1,9 @@
-package network
+package message
 
 import (
 	"encoding/json"
 	"log"
+	"time"
 )
 
 type message struct {
@@ -34,4 +35,13 @@ func Decode_message(json_marshalled []byte) message {
 		log.Println(err_d)
 	}
 	return m
+}
+
+func IsExpired(timestamp int64) bool {
+	const delay = 4 //4 seconds choosed as an arbitrary value to prevent reply attacks and at the same time to allow legitimate client packets to reach the server before they expire
+	tnow := time.Now().Unix()
+	if (timestamp > tnow) || (timestamp + delay < tnow) {
+		return true
+	}
+	return false
 }

@@ -66,7 +66,7 @@ go run main.go -m s -s 1337 22 8080 8081
 go run main.go -m c -a 120.23.21.212 -s 1337 -i 5.223.30.120 -t 300 -k 22
 ```
 
-Note: clients and server exchange messages encrypted with RSA, so to correctly send and read their content, it is necessary that the 4 .pem files are generated in advanced and shared between clients and server.
+Note: clients and server exchange messages encrypted with RSA. Therefore, to correctly send and read their content it is necessary that the 4 \*.pem files are generated in advanced and shared between clients and server.
 
 #### Scenario:
 a SSH service is available only for localhost connection on port 22

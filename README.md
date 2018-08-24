@@ -9,8 +9,8 @@ Notably, knockandgo is cross-platform and does not require any elevated privileg
 
 ### Features
 - Cross-platform (for both clients and server instances)
-- lightweight
-- easy to setup and use
+- Lightweight
+- Easy to setup and use
 - Does not rely on monitoring logs data
 - Does not need to run in kernelspace
 - Does not require root/administrator privileges to accomplish its task

@@ -28,19 +28,19 @@ func Encode_message(msg message) []byte {
 	return json_bytes
 }
 
-func Decode_message(json_marshalled []byte) message {
+func Decode_message(json_marshalled []byte) (message, error) {
 	m := message{}
 	err_d := json.Unmarshal(json_marshalled, &m)
 	if err_d != nil {
-		log.Println(err_d)
+		return m, err_d
 	}
-	return m
+	return m, nil
 }
 
 func IsExpired(timestamp int64) bool {
-	const delay = 4 //4 seconds choosed as an arbitrary value to prevent reply attacks and at the same time to allow legitimate client packets to reach the server before they expire
+	const delay = 10 //10 seconds choosed as an arbitrary value to prevent reply attacks and at the same time to allow legitimate client packets to reach the server before they expire
 	tnow := time.Now().Unix()
-	if (timestamp > tnow) || (timestamp + delay < tnow) {
+	if (timestamp > tnow + delay) || (timestamp + delay < tnow) {
 		return true
 	}
 	return false

@@ -43,7 +43,6 @@ func (s *udp_server) Run() {
 	
 	// listen to incoming udp packets
 	log.Println("Whitelisted knockable ports:", s.knockable_ports)
-	log.Println(s.server_port)
 	pc, err := net.ListenPacket("udp", "0.0.0.0"+":"+strconv.Itoa(s.server_port))
 	if err != nil {
 		log.Fatal(err)
@@ -61,7 +60,11 @@ func (s *udp_server) Run() {
 			log.Println("Error during the decryption of the message received")
 			continue
 		}
-		json_unmarshalled := message.Decode_message([]byte(json_marshalled))
+		json_unmarshalled, errde := message.Decode_message([]byte(json_marshalled))
+		if errde != nil {
+			log.Println("Error during the decoding of the message received")
+			continue
+		}
 		kport := json_unmarshalled.Knock_port
 		timestamp := json_unmarshalled.Timestamp
 		ip_to_whitelist := json_unmarshalled.Ip_to_whitelist

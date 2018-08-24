@@ -57,6 +57,6 @@ func (c *udp_client) Run() {
 		log.Println("Error decrypting the response from the server")
 		return
 	}
-	json_resp_unmarshalled := message.Decode_message([]byte(json_resp_marshalled))
+	json_resp_unmarshalled, _ := message.Decode_message([]byte(json_resp_marshalled))
 	log.Println(json_resp_unmarshalled)
 }

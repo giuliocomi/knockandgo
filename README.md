@@ -55,7 +55,7 @@ Options:
         timeout in seconds (default 86400)
 ```
 
-### Usage Examples
+### Usage
 
 - Server
 ```
@@ -66,20 +66,21 @@ go run main.go -m s -s 1337 22 8080 8081
 go run main.go -m c -a 120.23.21.212 -s 1337 -i 5.223.30.120 -t 300 -k 22
 ```
 
-Note: clients and server exchange messages encrypted with RSA. Therefore, to correctly send and read their content it is necessary that the 4 \*.pem files are generated in advanced and shared between clients and server.
+Note: clients and server exchange messages encrypted with RSA. Therefore, to correctly send and read their content it is necessary that the 4 \*.pem files are generated in advanced and shared between clients and the server.
 
-#### Scenario:
-a SSH service is available only for localhost connection on port 22
-##### Steps
-1) Server console:
+#### Examples
 
-[![asciicast](https://asciinema.org/a/8IZnS3bwImcZCIESgl41xrQmt.png?autoplay=1)](https://asciinema.org/a/8IZnS3bwImcZCIESgl41xrQmt)
-2) Client console:
+(1) Simple demostration of the output of both server (on the left) and client (on the right) instances
+![alt text](https://imgur.com/h0WZ62C.png)
 
-![alt text](https://imgur.com/1lat28c.png)
+(2) The SSH service is available only for localhost connection on port 22, a windows client access the SSH service after the 'knock'
+
+[![asciicast](https://asciinema.org/a/a6UMXFvBjwxsQPxLTUk3031RU)
+
+![alt text](https://imgur.com/e6Aus85.png)
 3) Now the SSH service is available:
 
-![alt text](https://imgur.com/fPOhFF4.png)
+![alt text](https://imgur.com/tvPRRR0.png)
 
 ### Roadmap
 * [ ] Integration with firewall (iptables for Linux, windows firewall API for Windows)

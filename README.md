@@ -22,6 +22,15 @@ Notably, knockandgo is cross-platform and does not require any elevated privileg
 - The server listen on UDP for semplicity and for reducing the probability that automatic scanners discover its UDP port 'open' 
 - Hard to fingerprint thanks to the encrypted traffic and a UDP random port to listen on
 
+### How it works
+
+1) The UDP server and the UDP clients need to have their private certificate (client|server)\_private.pem and the public certificate (client|server)\_public.pem of the other to successfully exchange messages.
+2) The UDP client sends a crafted message containing some fields such as the port to access.
+3) The UDP server does authentication and authorization checks and then, if everything is ok, instantiates a TCP forwarding server that listens on a random port. This forwarding port and the timeout of the connection are sent in a message response.
+4) The client outputs the information regarding the success, the forwarding port and the timeout choosed by the server and then exits.
+5) Now it is possible to reach and use the target service. After the first successfull TCP connection, the TCP forwarding server stops.
+
+
 ### Prerequisites
 
 knockandgo requires Golang

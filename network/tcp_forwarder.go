@@ -26,7 +26,6 @@ func NewTcpForwarder(server_address string, server_port int, knock_port int, ip_
 func (t *tcp_forwarder) Listen() {
 	defer utility.HandlePanic()
 	timer := time.NewTimer(time.Duration(t.timeout) * time.Second)
-	log.Println("timeout started")
 	listener, err := net.Listen("tcp", t.server_address+":"+strconv.Itoa(t.server_port))
 	if err != nil {
 		log.Fatal(err)

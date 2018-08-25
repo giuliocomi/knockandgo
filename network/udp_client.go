@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"bytes"	
 	"time"
+	"fmt"
 
 	"github.com/giuliocomi/knockandgo/message"
 	"github.com/giuliocomi/knockandgo/crypto"
@@ -57,6 +58,8 @@ func (c *udp_client) Run() {
 		log.Println("Error decrypting the response from the server")
 		return
 	}
-	json_resp_unmarshalled, _ := message.Decode_message([]byte(json_resp_marshalled))
-	log.Println(json_resp_unmarshalled)
+	json_resp_unmarshalled, _ := message.Decode_message([]byte(json_resp_marshalled))	
+	fmt.Println("Result:	", json_resp_unmarshalled.Result)
+	fmt.Println("Forwarding port waiting for TCP connection:	", json_resp_unmarshalled.Forwarding_port)
+	fmt.Println("Timeout for the connection:	", json_resp_unmarshalled.Timeout)
 }

@@ -14,7 +14,7 @@ Notably, knockandgo is cross-platform and does not require any elevated privileg
 - Does not rely on monitoring logs data
 - Does not need to run in kernelspace
 - Does not require root/administrator privileges to accomplish its task
-- IP spoofing prevention acquired through both IP whitelisting and the native presence of non-guessable sequence numbers in TCP packets
+- IP spoofing prevention acquired through both IP whitelisting and the native presence of 'non-guessable' sequence numbers in TCP packets
 - Reply attack mitigation by the presence of expiration time in messages
 - Does never expose the true service port but open a random port and then forward the traffic between the client and that service
 - Configurable timeouts

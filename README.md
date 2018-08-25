@@ -93,7 +93,8 @@ Note: clients and server exchange messages encrypted with RSA. Therefore, to cor
 
 ### Roadmap
 * [ ] Integration with firewall (iptables for Linux, windows firewall API for Windows)
-    
+* [ ] Add support for IPv6
+
 ## License
 
 This project is licensed under the Apache License 2.0

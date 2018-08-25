@@ -11,15 +11,14 @@ Notably, knockandgo is cross-platform and does not require any elevated privileg
 - Cross-platform (for both clients and server instances)
 - Lightweight
 - Easy to setup and use
+- Configurable timeouts
+- Use of encryption for the communication
 - Does not rely on monitoring logs data
 - Does not need to run in kernelspace
 - Does not require root/administrator privileges to accomplish its task
-- IP spoofing prevention acquired through both IP whitelisting and the native presence of 'non-guessable' sequence numbers in TCP packets
-- Reply attack mitigation by the presence of expiration time in messages
+- IP spoofing mitigation acquired through both IP whitelisting and the native presence of 'non-guessable' sequence numbers in TCP packets
+- Reply attack mitigation by the presence of expiration time in knock requests
 - Does never expose the true service port but open a random port and then forward the traffic between the client and that service
-- Configurable timeouts
-- Message exchange based on asymmetric encryption
-- The server listen on UDP for semplicity and for reducing the probability that automatic scanners discover its UDP port 'open' 
 - Hard to fingerprint thanks to the encrypted traffic and a UDP random port to listen on
 
 ### How it works

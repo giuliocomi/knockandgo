@@ -81,6 +81,9 @@ a SSH service is available only for localhost connection on port 22
 
 ![alt text](https://imgur.com/fPOhFF4.png)
 
+### Roadmap
+* [ ] Integration with firewall (iptables for Linux, windows firewall API for Windows)
+    
 ## License
 
 This project is licensed under the Apache License 2.0

@@ -6,7 +6,6 @@ import (
 	"time"
 	"errors"
 	"crypto/sha256"
-	"bytes"
 )
 
 type message struct {
@@ -21,9 +20,6 @@ type message struct {
 
 func NewMessage(k, f int, i string, t int, r bool, o int64) message {
 	m := message{k, f, i, t, r, o,  sha256.Sum256([]byte(string(k)+string(i)+string(t)+string(o)))}
-	buf := new(bytes.Buffer)
-	json.NewEncoder(buf).Encode(m)
-	m.Checksum = sha256.Sum256([]byte(buf.Bytes()))
 	return m
 }
 
@@ -44,8 +40,6 @@ func Decode_message(json_marshalled []byte) (message, error) {
 	//check the integrity of the message received
 	mi := NewMessage(m.Knock_port, m.Forwarding_port, m.Ip_to_whitelist, m.Timeout, m.Result, m.Timestamp)
 	if m.Checksum != mi.Checksum {
-		log.Println(m.Checksum)
-		log.Println(mi.Checksum)
 		return m, errors.New("The integrity check has failed. The message has been tampered.")		
 	}
 	return m, nil

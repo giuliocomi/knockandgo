@@ -18,6 +18,7 @@ Notably, knockandgo is cross-platform and does not require any elevated privileg
 - Does not require root/administrator privileges to accomplish its task
 - IP spoofing mitigation acquired through both IP whitelisting and the native presence of 'non-guessable' sequence numbers in TCP packets
 - Reply attack mitigation by the presence of expiration time in knock requests
+- Integrity check to mitigate tampering attempts
 - Does never expose the true service port but open a random port and then forward the traffic between the client and that service
 - Hard to fingerprint thanks to the encrypted traffic and a UDP random port to listen on
 

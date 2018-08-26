@@ -62,7 +62,7 @@ func (s *udp_server) Run() {
 		}
 		json_unmarshalled, errde := message.Decode_message([]byte(json_marshalled))
 		if errde != nil {
-			log.Println("Error during the decoding of the message received")
+			SendResponse(string(message.Encode_message(message.NewMessage(0, 0, "127.0.0.1", 0, false, time.Now().Unix()))), pc, s.certpath, addr) 
 			continue
 		}
 		kport := json_unmarshalled.Knock_port

@@ -12,7 +12,6 @@ Notably, knockandgo is cross-platform and does not require any elevated privileg
 - Lightweight
 - Easy to setup and use
 - Configurable timeouts
-- Use of encryption for the communication
 - Does not rely on monitoring logs data
 - Does not need to run in kernelspace
 - Does not require root/administrator privileges to accomplish its task

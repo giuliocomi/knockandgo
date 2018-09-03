@@ -94,6 +94,8 @@ Note: clients and server exchange messages encrypted with RSA. Therefore, to cor
 * [ ] Integration with firewall (iptables for Linux, windows firewall API for Windows)
 * [ ] Add support for IPv6
 
-## License
+## Issues
+Spot a bug? Please create an issue here on GitHub (https://github.com/giuliocomi/knockandgo/issues)
 
+## License
 This project is licensed under the Apache License 2.0

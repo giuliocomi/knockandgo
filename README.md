@@ -86,8 +86,6 @@ Note: clients and server exchange messages encrypted with RSA. Therefore, to cor
 
 (2) The SSH service is available only for localhost connection on port 22, a windows client access the SSH service after the 'knock'
 
-[![asciicast](https://asciinema.org/a/a6UMXFvBjwxsQPxLTUk3031RU.png)](https://asciinema.org/a/a6UMXFvBjwxsQPxLTUk3031RU)
-
 ![alt text](https://imgur.com/e6Aus85.png)
 
 ![alt text](https://imgur.com/tvPRRR0.png)

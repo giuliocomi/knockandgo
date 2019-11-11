@@ -1,24 +1,24 @@
 package network
 
 import (
+	"bytes"
+	"fmt"
 	"log"
 	"net"
 	"strconv"
-	"bytes"	
 	"time"
-	"fmt"
 
-	"github.com/giuliocomi/knockandgo/message"
 	"github.com/giuliocomi/knockandgo/crypto"
+	"github.com/giuliocomi/knockandgo/message"
 	"github.com/giuliocomi/knockandgo/utility"
 )
 
 type udp_client struct {
-	server_address string
-	server_port    int
-	knock_port     int
-	certpath       string
-	timeout        int
+	server_address  string
+	server_port     int
+	knock_port      int
+	certpath        string
+	timeout         int
 	ip_to_whitelist string
 }
 
@@ -47,18 +47,18 @@ func (c *udp_client) Run() {
 		log.Println("Error encrypting the message", erre)
 		return
 	} else {
-		conn.Write([]byte(encrypted_msg))
+		_, _ = conn.Write([]byte(encrypted_msg))
 	}
 
 	//read which forwarding port has been picked
 	buffer := make([]byte, 1024)
-	conn.Read(buffer)
+	_, _ = conn.Read(buffer)
 	json_resp_marshalled, errd := crypto.Decrypt(string(bytes.Trim(buffer, "\x00")), c.certpath+"client_private.pem")
 	if errd != nil {
 		log.Println("Error decrypting the response from the server")
 		return
 	}
-	json_resp_unmarshalled, _ := message.Decode_message([]byte(json_resp_marshalled))	
+	json_resp_unmarshalled, _ := message.Decode_message([]byte(json_resp_marshalled))
 	fmt.Println("Result:	", json_resp_unmarshalled.Result)
 	fmt.Println("Forwarding port waiting for TCP connection:	", json_resp_unmarshalled.Forwarding_port)
 	fmt.Println("Timeout for the connection:	", json_resp_unmarshalled.Timeout)

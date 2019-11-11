@@ -8,8 +8,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/giuliocomi/knockandgo/message"
 	"github.com/giuliocomi/knockandgo/crypto"
+	"github.com/giuliocomi/knockandgo/message"
 	"github.com/giuliocomi/knockandgo/utility"
 )
 
@@ -21,7 +21,7 @@ type udp_server struct {
 	timeout              int
 }
 
-var singleton *udp_server 
+var singleton *udp_server
 var once sync.Once
 var Instantiated_forwarding_ports int //the forwarding ports currently in state 'open'
 func (s *udp_server) SetUdpServer(s_port int, kports []int, max_f_ports int, cpath string, tout int) {
@@ -35,12 +35,12 @@ func (s *udp_server) SetUdpServer(s_port int, kports []int, max_f_ports int, cpa
 func GetUDPServer() *udp_server {
 	once.Do(func() {
 		singleton = &udp_server{}
-	    })
+	})
 	return singleton
 }
 
 func (s *udp_server) Run() {
-	
+
 	// listen to incoming udp packets
 	log.Println("Whitelisted knockable ports:", s.knockable_ports)
 	pc, err := net.ListenPacket("udp", "0.0.0.0"+":"+strconv.Itoa(s.server_port))
@@ -62,7 +62,7 @@ func (s *udp_server) Run() {
 		}
 		json_unmarshalled, errde := message.Decode_message([]byte(json_marshalled))
 		if errde != nil {
-			SendResponse(string(message.Encode_message(message.NewMessage(0, 0, "127.0.0.1", 0, false, time.Now().Unix()))), pc, s.certpath, addr) 
+			SendResponse(string(message.Encode_message(message.NewMessage(0, 0, "127.0.0.1", 0, false, time.Now().Unix()))), pc, s.certpath, addr)
 			continue
 		}
 		kport := json_unmarshalled.Knock_port
@@ -110,7 +110,7 @@ func (s *udp_server) Run() {
 				log.Println("The IP to whitelist is not in a correct IPv4 format")
 			} else if is_expired {
 				log.Println("The message time validity is expired")
-			} else {	
+			} else {
 				log.Println("Port is not whitelisted to be forwarded")
 			}
 			SendResponse(string(message.Encode_message(message.NewMessage(kport, rort, "", 0, false, time.Now().Unix()))), pc, s.certpath, addr)
@@ -124,6 +124,5 @@ func SendResponse(encoded_response string, pc net.PacketConn, certpath string, a
 		log.Println("Error during encryption of the response", err)
 		return
 	}
-	pc.WriteTo([]byte(encrypted_response), addr)
+	_, _ = pc.WriteTo([]byte(encrypted_response), addr)
 }
-

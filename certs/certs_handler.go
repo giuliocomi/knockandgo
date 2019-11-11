@@ -80,14 +80,14 @@ func HandleCert(certpath string) {
 	fmt.Println("Generating the key pairs...")
 	//generate the key pair for the clients
 	generateCerts(certpath, "client_public.pem", "client_private.pem")
-	
+
 	//generate the key pair for the server
 	generateCerts(certpath, "server_public.pem", "server_private.pem")
 	fmt.Println(certpath, "Finished successfully...")
 }
 
 func generateCerts(certpath, public, private string) {
-// Create the keys
+	// Create the keys
 	priv, pub := GenerateRsaKeyPair()
 
 	// Export the keys to pem string
@@ -123,30 +123,30 @@ func CheckCerts(certpath, modality string) bool {
 
 	switch modality {
 	case string("s"):
-		file, errf = filepath.Abs(certpath+"server_private.pem")
+		file, errf = filepath.Abs(certpath + "server_private.pem")
 		_, errc = ioutil.ReadFile(file)
 		if errf != nil || errc != nil {
 			return false
 		}
-		file, errf = filepath.Abs(certpath+"client_public.pem")
+		file, errf = filepath.Abs(certpath + "client_public.pem")
 		_, errc = ioutil.ReadFile(file)
 		if errf != nil || errc != nil {
 			return false
 		}
 		return true
 	case string("c"):
-		file, errf = filepath.Abs(certpath+"client_private.pem")
+		file, errf = filepath.Abs(certpath + "client_private.pem")
 		_, errc = ioutil.ReadFile(file)
 		if errf != nil || errc != nil {
 			return false
 		}
-		file, errf = filepath.Abs(certpath+"server_public.pem")
+		file, errf = filepath.Abs(certpath + "server_public.pem")
 		_, errc = ioutil.ReadFile(file)
 		if errf != nil || errc != nil {
 			return false
 		}
 		return true
 	default:
-		return false	
+		return false
 	}
 }

@@ -4,9 +4,9 @@ import (
 	"flag"
 	"log"
 
+	"github.com/giuliocomi/knockandgo/certs"
 	"github.com/giuliocomi/knockandgo/network"
 	"github.com/giuliocomi/knockandgo/utility"
-	"github.com/giuliocomi/knockandgo/certs"
 )
 
 var (
@@ -22,7 +22,6 @@ var (
 )
 
 func main() {
-
 	flag.Parse()
 
 	// load and validate the whitelisted knockable ports
@@ -36,12 +35,12 @@ func main() {
 	}
 
 	//check if the necessary certificates are in the correct path (/certs)
-	are_certificate_present := certs.CheckCerts(*certpath, *modality)
-	if !are_certificate_present {
+	areCertificatePresent := certs.CheckCerts(*certpath, *modality)
+	if !areCertificatePresent {
 		log.Println("The necessary certificates are missing...")
 		certs.HandleCert(*certpath)
 	}
-	
+
 	//launch the client or server instance
 	switch string(*modality) {
 	case string("s"):

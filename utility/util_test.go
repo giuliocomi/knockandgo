@@ -56,21 +56,21 @@ func TestIsValidIP4(t *testing.T) {
 func TestSliceAtoi(t *testing.T) {
 	t.Parallel()
 
-var tests = []struct {
+	var tests = []struct {
 		param    []string
 		expected []int
 	}{
-		{[]string{"1","    22", "3", "asasaaaa", "80", "8080", "2445"}, []int{1, 22, 3, 80, 8080, 2445}},
-		{[]string{"-1","  -  22", "3", "5050", "80", "8080", "2445"}, []int{-1, 3, 5050, 80, 8080, 2445}},
+		{[]string{"1", "    22", "3", "asasaaaa", "80", "8080", "2445"}, []int{1, 22, 3, 80, 8080, 2445}},
+		{[]string{"-1", "  -  22", "3", "5050", "80", "8080", "2445"}, []int{-1, 3, 5050, 80, 8080, 2445}},
 	}
 
 	for _, test := range tests {
 		actual, _ := SliceAtoi(test.param)
-		
+
 		var buf_expected bytes.Buffer
-		binary.Write(&buf_expected, binary.BigEndian, test.expected)
+		_ = binary.Write(&buf_expected, binary.BigEndian, test.expected)
 		var buf_actual bytes.Buffer
-		binary.Write(&buf_actual, binary.BigEndian, actual)
+		_ = binary.Write(&buf_actual, binary.BigEndian, actual)
 
 		if !bytes.Equal(buf_expected.Bytes(), buf_actual.Bytes()) {
 			t.Errorf("Expected SliceAtoi(%v) to be %v, got %v", test.param, test.expected, actual)
@@ -78,4 +78,3 @@ var tests = []struct {
 	}
 
 }
-

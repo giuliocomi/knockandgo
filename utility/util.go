@@ -4,15 +4,14 @@ import (
 	"log"
 	"math/rand"
 	"net"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
-	"sort"
 )
 
 //verify if the target port is in state 'open'
 func CheckConnection(server_address string, fport int) bool {
-
 	conn, err := net.Dial("tcp", server_address+":"+strconv.Itoa(fport))
 	if err != nil {
 		return false
@@ -30,13 +29,13 @@ func RandomPort() int {
 	for port_available == false {
 		rort := rand.Intn(65535-1025) + 1025
 		if !CheckConnection("127.0.0.1", rort) {
-			return rort
+			port_available = true
 		}
 	}
 	return rort
 }
 
-func ContainsPort(s []int, e int) bool { 
+func ContainsPort(s []int, e int) bool {
 	sort.Ints(s)
 	i := sort.Search(len(s), func(i int) bool { return s[i] >= e })
 	if (i < len(s) && s[i] == e) && (e < 65535) && (e > 0) {
@@ -78,15 +77,15 @@ func HandlePanic() {
 
 func GetStringIpFromAddr(c net.Conn) string {
 	if addr, ok := c.RemoteAddr().(*net.TCPAddr); ok {
-    		return addr.IP.String()
+		return addr.IP.String()
 	}
 	return "localhost"
 }
 
-func IsExpired (timestamp int64) bool {
-	const delay = 4 //4 seconds choosed as an arbitrary value to prevent reply attacks and at the same time to allow legitimate client packets to reach the server before they expire
+func IsExpired(timestamp int64) bool {
+	const delay = 4 // 4 seconds chosen as an arbitrary value to prevent reply attacks and at the same time to allow legitimate client packets to reach the server before they expire
 	tnow := time.Now().Unix()
-	if (timestamp > tnow) || (timestamp + delay < tnow) {
+	if (timestamp > tnow) || (timestamp+delay < tnow) {
 		return true
 	}
 	return false

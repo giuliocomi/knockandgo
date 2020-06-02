@@ -27,7 +27,7 @@ func RandomPort() int {
 	rand.Seed(time.Now().Unix())
 
 	for port_available == false {
-		rort := rand.Intn(65535-1025) + 1025
+		rort = rand.Intn(65535-1025) + 1025
 		if !CheckConnection("127.0.0.1", rort) {
 			port_available = true
 		}
